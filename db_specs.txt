@@ -1,0 +1,24 @@
+DB specs:
+
+Transactions:
+	- transaction_id
+	- transaction_type (purchase, atm withdrawal, direct deposit, edeposit)
+	- account_id
+	- description
+	- transaction_amount
+	- date
+	- card
+	- source_bank
+	- entered_date
+
+Accounts:
+	- account_id
+	- account_name
+	- account_type (fixed_spending, variable_spending, saving)
+	- account_sub_type (utilities, insurance, medical, etc.)
+
+Budgets:
+	- budget_year
+	- budget_month
+	- account_id
+	- budget_amount
