@@ -2,12 +2,17 @@ DB specs:
 
 Transactions:
 	- transaction_id
+	- source_id
 	- transaction_type (purchase, atm withdrawal, direct deposit, edeposit)
 	- account_id
-	- description
+	- full_description
+	- formatted_description
+	- transaction_city
+	- transaction_state
 	- transaction_amount
-	- date
-	- card
+	- record_date
+	- transaction_date
+	- card_num
 	- source_bank
 	- entered_date
 
@@ -22,3 +27,7 @@ Budgets:
 	- budget_month
 	- account_id
 	- budget_amount
+
+
+Design considerations:
+	- if transaction_date = 12 and record_date = 1, set transaction year -1
