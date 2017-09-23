@@ -31,7 +31,7 @@ wf_trans_types = {
     # 'ATM WITHDRAWAL',
     'DIRECT DEP': ('Direct Deposit', lambda df: split_wf_dd(df)),
     # 'eDeposit',
-    # 'TRANSFER',
+    'TRANSFER': ('Transfer', lambda df: split_wf_trnf(df)),
 }
 
 def import_files(date):
@@ -52,6 +52,7 @@ def import_files(date):
         df['transaction_state'] = ''
         df['source_id_num'] = ''
         df['card_num'] = ''
+        df['recipient_name'] = ''
 
         clean_df = clean_transactions(df, bank)
         return clean_df
@@ -98,6 +99,16 @@ def split_wf_dd(sub_df):
 	sub_df['formatted_description'] = sub_df['formatted_description'] + ' ' + sub_df['recipient_name']
 	sub_df = sub_df.drop('recipient_name',axis=1)
 	return sub_df
+
+# def split_wf_atm(sub_df):
+
+# def split_wf_edep(sub_df):
+
+def split_wf_trnf(sub_df):
+
+    sub_df[['source_id_num', 'card_num', 'transaction_date']] = sub_df['full_description'].str.extract(r'^ONLINE TRANSFER REF ([\w#]+) TO [\w\s]+ [X]+(\d{4}) ON ([\d\/]+)$')
+    sub_df['transaction_date'] = pd.to_datetime(sub_df['transaction_date'])
+    return sub_df
 
 def format_date(row):
 
