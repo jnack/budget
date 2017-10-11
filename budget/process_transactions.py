@@ -30,7 +30,7 @@ wf_trans_types = {
     'PURCHASE RETURN': ('Return', lambda df: split_wf_return(df)),
     'ATM WITHDRAWAL': ('ATM Withdrawal', lambda df: split_wf_atm(df)),
     'DIRECT DEP': ('Direct Deposit', lambda df: split_wf_dd(df)),
-    # 'eDeposit',
+    'eDeposit': ('eDeposit', lambda df: split_wf_edep(df)),
     'TRANSFER': ('Transfer', lambda df: split_wf_trnf(df)),
 }
 
@@ -51,7 +51,7 @@ def import_files(date):
         df['transaction_city'] = ''
         df['transaction_state'] = ''
         df['source_id_num'] = ''
-        df['card_num'] = ''
+        df['account_num'] = ''
         df['recipient_name'] = ''
         df['branch_id'] = ''
 
@@ -82,13 +82,13 @@ def clean_transactions(df, bank):
 
 def split_wf_purchase(sub_df):
     # sub_df['transaction_type'] = 'Purchase'
-	sub_df[['transaction_date','formatted_description','transaction_city','transaction_state','source_id_num','card_num']] = sub_df['full_description'].str.extract(r'^PURCHASE AUTHORIZED ON (\d{2}/\d{2}) ([\w#\'\.\-\*\\\&\/]+[\s\w#\'\.\-\*\/\\\&]*) ([\w#\'\.\-\*\\\&\/]+[[\s\w\.\/#]{3,4}]*) ([A-Za-z]{2}) ([A-Za-z]{1}\d{10,}) CARD (\d{4})$')
+	sub_df[['transaction_date','formatted_description','transaction_city','transaction_state','source_id_num','account_num']] = sub_df['full_description'].str.extract(r'^PURCHASE AUTHORIZED ON (\d{2}/\d{2}) ([\w#\'\.\-\*\\\&\/]+[\s\w#\'\.\-\*\/\\\&]*) ([\w#\'\.\-\*\\\&\/]+[[\s\w\.\/#]{3,4}]*) ([A-Za-z]{2}) ([A-Za-z]{1}\d{10,}) CARD (\d{4})$')
 	sub_df['transaction_date'] = sub_df.apply(format_date, axis=1)
 	return sub_df
 
 def split_wf_return(sub_df):
     # sub_df['transaction_type'] = 'Return'
-    sub_df[['transaction_date','formatted_description','transaction_city','transaction_state','source_id_num','card_num']] = sub_df['full_description'].str.extract(r'^PURCHASE RETURN AUTHORIZED ON (\d{2}/\d{2}) ([\w#\'\.\-\*\\\&\/]+[\s\w#\'\.\-\*\\\/\&]*) ([\w#\'\.\-\*\\\&\/]+[[\s\w\.\/#]{3,4}]*) ([A-Za-z]{2}) ([A-Za-z]{1}\d{10,}) CARD (\d{4})$')
+    sub_df[['transaction_date','formatted_description','transaction_city','transaction_state','source_id_num','account_num']] = sub_df['full_description'].str.extract(r'^PURCHASE RETURN AUTHORIZED ON (\d{2}/\d{2}) ([\w#\'\.\-\*\\\&\/]+[\s\w#\'\.\-\*\\\/\&]*) ([\w#\'\.\-\*\\\&\/]+[[\s\w\.\/#]{3,4}]*) ([A-Za-z]{2}) ([A-Za-z]{1}\d{10,}) CARD (\d{4})$')
     sub_df['transaction_date'] = sub_df.apply(format_date, axis=1)
     return sub_df
 
@@ -102,14 +102,18 @@ def split_wf_dd(sub_df):
 	return sub_df
 
 def split_wf_atm(sub_df):
-    sub_df[['transaction_date','formatted_description','transaction_city','transaction_state','source_id_num','branch_id','card_num']] = sub_df['full_description'].str.extract(r'^ATM WITHDRAWAL AUTHORIZED ON (\d{2}/\d{2}) ([\w#\'\.\-\*\\\&\/]+[\s\w#\'\.\-\*\/\\\&]*) ([\w#\'\.\-\*\\\&\/]+[[\s\w\.\/#]{3,4}]*) ([A-Za-z]{2}) ([\d]+) ATM ID ([\w]+) CARD (\d{4})$')
+    sub_df[['transaction_date','formatted_description','transaction_city','transaction_state','source_id_num','branch_id','account_num']] = sub_df['full_description'].str.extract(r'^ATM WITHDRAWAL AUTHORIZED ON (\d{2}/\d{2}) ([\w#\'\.\-\*\\\&\/]+[\s\w#\'\.\-\*\/\\\&]*) ([\w#\'\.\-\*\\\&\/]+[[\s\w\.\/#]{3,4}]*) ([A-Za-z]{2}) ([\d]+) ATM ID ([\w]+) CARD (\d{4})$')
     sub_df['transaction_date'] = sub_df.apply(format_date, axis=1)
     return sub_df
-# def split_wf_edep(sub_df):
+
+def split_wf_edep(sub_df):
+    sub_df[['transaction_date','formatted_description','transaction_city','transaction_state','account_num']] = sub_df['full_description'].str.extract(r'^eDeposit in Branch/Store ([\d\/]{8} [\d:]{8} [PAM]{2}) ([\w#\'\.\-\*\\\&\/]+[\s\w#\'\.\-\*\/\\\&]*) ([\w#\'\.\-\*\\\&\/]+[[\s\w\.\/#]{3,4}]*) ([A-Za-z]{2}) ([\d]+)$')
+    sub_df['transaction_date'] = pd.to_datetime(sub_df['transaction_date'])
+    return sub_df
 
 def split_wf_trnf(sub_df):
 
-    sub_df[['source_id_num', 'card_num', 'transaction_date']] = sub_df['full_description'].str.extract(r'^ONLINE TRANSFER REF ([\w#]+) TO [\w\s]+ [X]+(\d{4}) ON ([\d\/]+)$')
+    sub_df[['source_id_num', 'account_num', 'transaction_date']] = sub_df['full_description'].str.extract(r'^ONLINE TRANSFER REF ([\w#]+) TO [\w\s]+ [X]+(\d{4}) ON ([\d\/]+)$')
     sub_df['transaction_date'] = pd.to_datetime(sub_df['transaction_date'])
     return sub_df
 
