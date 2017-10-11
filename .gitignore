@@ -1,5 +1,12 @@
 *.csv
 *.csv#
 *.xlsx
-*.xlsx#__pycache__
+*.xlsx#
+__pycache__
 *.pyc
+output/
+transactions/
+*.ods
+*.odf
+*.ods#
+*.odf#
