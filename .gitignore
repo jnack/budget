@@ -10,3 +10,6 @@ transactions/
 *.odf
 *.ods#
 *.odf#
+*.db
+budget/test/
+db_specs.txt
