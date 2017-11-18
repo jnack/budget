@@ -13,3 +13,4 @@ transactions/
 *.db
 budget/test/
 db_specs.txt
+*.swp
